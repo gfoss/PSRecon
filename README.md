@@ -1,7 +1,7 @@
 ![PSRecon](/images/psrecon.png)
 
 		PSRecon
-        PowerShell Incident Response - Live Data Acquisition
+        PowerShell Incident Response - Live Forensic Data Acquisition
 		Greg Foss | @heinzarelli
 		v0.1 -- August 2015
 
@@ -10,6 +10,12 @@
 Blog Post => https://blog.logrhythm.com/digital-forensics/psrecon/
 
 PSRecon gathers data from a remote Windows host using PowerShell (v2 or later), organizes the data into folders, hashes all extracted data, hashes PowerShell and various system properties, and sends the data off to the security team. The data can be pushed to a share, sent over email, or retained locally.
+
+![email](/images/email-notification.png)
+
+One nice part about the report is that everything is self-contained, making it easy to share as there is no reliance on a centralize server. Even the images are encoded directly into the report's HTML.
+
+![reporting](/images/report-images.png)
 
 This script also includes endpoint lockdown functionality. This can be useful when working through a malware outbreak incident, especially when there is risk that the malware will spread to a share or other critical systems within the enterprise. Sometimes the quickest and most effective way to stop the spread of malware is to simply knock the host offline until IT/Security can respond, following the extraction of forensic data. Alternatively to quarantining the host, PSRecon allows you to disable an active directory account as well.
 
@@ -105,9 +111,11 @@ Ideally, this script should be integrated with the organization's Active Defense
 
 ## [Use Cases]
 
+![remote](/images/remote-data-capture.png)
+
 #####1) Basic Incident Response
 
-Run this script directly to extract live forensic data from a remote host over the network and send the evidence report out via email to the Incident Response team and/or push the evidence in its entirety to a remote share for later review.
+Run this script directly to extract live forensic data from a remote host over the network and send the evidence report out via email to the Incident Response team and/or push the evidence in its entirety to a remote share for later review. You could alternatively, run this script on the host directly, by way of a USB and store the results on the external drive.
 
 #####2) SIEM Integration for Incident Response Automation
 
@@ -121,7 +129,11 @@ Say that you have received alerts that a system recently became infected with a 
 
 PSRecon does modify the target filesystem, so in a sense this is not as forensically sound as capturing an image using something like EnCase. Please be aware of this before using the tool in a real IR scenario... However, PSRecon does create it's own application logs and hashes all data obtained in order to track and verify it's own activity. This is helpful in re-constructing the timeline and verification of access and modifications to the target system, however this may not hold up in court. Please be aware of this.
 
-![logging](/images/logging.png)
+![logging](/images/lawgz.png)
+
+Speaking of Logging, PSRecon also logs attempted attacks against itself... So, take an example scenario where someone tries to hijack another employee’s browser by inserting JavaScript into a user-controllable field of PSRecon that is embedded within a security solution. To do this they would inject an XSS attack within a user-controllable field that is reflected on the HTML report. These attacks are detected and logged, allowing for additional actions to be taken. Of course, there are tons of ways around this, it’s just a small added precaution for when the script is integrated with security infrastructure.
+
+![security](/images/hax.png)
 
 ## [Thanks]
 
@@ -144,7 +156,7 @@ modification, are permitted provided that the following conditions are met:
 * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
 * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
 * Neither the name of Greg Foss, LogRhythm, LogRhythm Labs, nor the names of any of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
-* This script is not 'forensically sound' as it will write to the target host. Please keep this in mind.
+* This script is not technically 'forensically sound' as it will write to the target host. Please keep this in mind.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
 ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED

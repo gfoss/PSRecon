@@ -113,29 +113,37 @@ The safest way to run this script is locally, however remote execution is possib
     
 .OUTPUTS
     The script currently gathers the following data:
-      -ARP table
-      -Capture host screenshot
-      -Command history
-      -DNS cache
-      -Environment variables
+      -ARP Table
+      -AT Jobs
+      -Capture Host Screenshot
+      -Command History
+      -DNS Cache
+      -Environment Variables
       -Extract Internet Explorer history
-      -Extract email history and links
-      -Firewall configuration
-      -Hash collected evidence files to verify authenticity
-      -Host file information
-      -IP address
-      -Netstat information
-      -List open shares
-      -PowerShell versioning
-      -PowerShell executable hashes
-      -Process information
-      -Prefetch files
-      -Running services
-      -Scheduled processes
-      -Scheduled tasks
-      -Startup information
-      -User and admin information
-      -Windows version information
+      -Extract Email History and Links
+      -Firewall Configuration
+      -GPSresult
+      -Hash Collected Evidence Files to Verify Authenticity
+      -Host File Information
+      -IP Address
+      -Netstat Information
+      -List Open Shares
+      -Local PowerShell Scripts
+      -Logon Data
+      -PowerShell Versioning
+      -PowerShell Executable Hashes
+      -Process Information
+      -Prefetch Files
+      -Remote Desktop Sessions
+      -Running Services
+      -Scheduled Processes
+      -Scheduled Tasks
+      -Service Details
+      -Startup Information
+      -USB Device History
+      -User and Admin Information
+      -Windows Patches
+      -Windows Version Information
 #>
 
 #=======================================================================================
@@ -629,7 +637,7 @@ move $path .\PSRecon\config\screenshot.png
 #    https://raw.githubusercontent.com/clymb3r/PowerShell/master/Get-ComputerDetails/Get-ComputerDetails.ps1
 if ( $remote -eq $true ) {
     
-    #I Suck at PowerShell, anyone know how to mitigate the memory issue so that Kansa cmdlets can run remotely?
+    # I Suck at PowerShell, anyone know how to mitigate the memory issue so that Kansa cmdlets can run remotely?
 
     $RDPconnections = "<p>Unfortunately his data cannot be pulled when PSRecon is run remotely<br />
     Unless the shell memory is expanded...<br /><br />
