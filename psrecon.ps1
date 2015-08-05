@@ -4,7 +4,7 @@
   # LogRhythm Labs                           #
   # Incident Response Live Data Acquisition  #
   # greg . foss @ logrhythm.com              #
-  # v0.1  --  August 2015                    #
+  # v0.1  --  August  5, 2015                #
   #==========================================#
 
 # Copyright 2015 LogRhythm Inc.   
