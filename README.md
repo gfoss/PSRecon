@@ -19,7 +19,7 @@ One nice part about the report is that everything is self-contained, making it e
 
 This script also includes endpoint lockdown functionality. This can be useful when working through a malware outbreak incident, especially when there is risk that the malware will spread to a share or other critical systems within the enterprise. Sometimes the quickest and most effective way to stop the spread of malware is to simply knock the host offline until IT/Security can respond, following the extraction of forensic data. Alternatively to quarantining the host, PSRecon allows you to disable an active directory account as well.
 
-Ideally, this script should be integrated with the organization's Active Defense frameworks to automate rapid forensic data acquisition and host lockdown.
+Ideally, this script should be integrated with the organization's Active Defense frameworks to automate rapid forensic data acquisition and lock down the endpoint.
 
 ## [How To]
 
@@ -148,7 +148,7 @@ A good portion of this code has been scavenged from around the Internet because 
 
 ## [License]
 
-Copyright (c) 2015, Greg Foss
+Copyright (c) 2015, LogRhythm
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -158,13 +158,14 @@ modification, are permitted provided that the following conditions are met:
 * Neither the name of Greg Foss, LogRhythm, LogRhythm Labs, nor the names of any of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 * This script is not technically 'forensically sound' as it will write to the target host. Please keep this in mind.
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
-DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
