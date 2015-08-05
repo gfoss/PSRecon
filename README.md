@@ -2,7 +2,7 @@
 
 		PSRecon
         PowerShell Incident Response - Live Forensic Data Acquisition
-		Greg Foss | @heinzarelli
+		Greg Foss | @heinzarelli | greg.foss@logrhythm.com
 		v0.1 -- August 2015
 
 ## [About]
