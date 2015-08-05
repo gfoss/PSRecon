@@ -158,6 +158,7 @@ The safest way to run this script is locally, however remote execution is possib
 # Mask errors
 $ErrorActionPreference= 'silentlycontinue'
 
+# Check for Admin Rights
 if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] 'Administrator')) {
     Write-Host 'You must run PSRecon from an elevated PowerShell session...'
     Exit 1
@@ -181,7 +182,6 @@ function dirs {
     mkdir PSRecon\web\ > $null 2>&1
     mkdir PSRecon\registry\ > $null 2>&1
 }
-
 $exists = "PSRecon_*\"
 If (Test-Path $exists){
     Remove-Item PSRecon_*\ -Recurse -Force
