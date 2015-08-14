@@ -57,7 +57,7 @@ Ideally, this script should be integrated with the organization's Active Defense
         Then...
 
         Option 1 -- Execute locally in-memory, push evidence to a share, and lock the host down:
-            [10.10.10.10]: PS C:\> IEX (New-Object Net.WebClient).DownloadString('https://github.com/gfoss/PSRecon/')
+            [10.10.10.10]: PS C:\> IEX (New-Object Net.WebClient).DownloadString('https://github.com/gfoss/PSRecon/psrecon.ps1')
             [10.10.10.10]: PS C:\> Copy-Item PSRecon_* -Recurse [network share]
             [10.10.10.10]: PS C:\> rm PSRecon_* -Recurse -Force
             [10.10.10.10]: PS C:\> Invoke-Lockdown; exit
