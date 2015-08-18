@@ -287,8 +287,8 @@ $sharesA = get-content PSRecon\network\shares.html
 $shares = $sharesA | foreach {$_ + "<br />"}
 
 # Gathering host file information
-type c:\windows\system32\drivers\etc\hosts > PSRecon\network\etchosts.html
-type c:\windows\system32\drivers\etc\networks > PSRecon\network\etcnetworks.html
+type $env:windir\system32\drivers\etc\hosts > PSRecon\network\etchosts.html
+type $env:windir\system32\drivers\etc\networks > PSRecon\network\etcnetworks.html
 $hostsA = get-content PSRecon\network\etchosts.html
 $hosts = $hostsA | foreach {$_ + "<br />"}
 $networksA = get-content PSRecon\network\etcnetworks.html
@@ -340,10 +340,10 @@ $acl = type PSRecon\system\acl.html
 $version = type PSRecon\system\os-version.html
 
 # Dumping the startup information
-type C:\autoexec.bat > PSRecon\system\autoexecBat.html 2>&1
-type C:\config.sys > PSRecon\system\configSys.html 2>&1
-type C:\Windows\win.ini > PSRecon\system\winIni.html 2>&1
-type C:\Windows\system.ini > PSRecon\system\systemIni.html 2>&1
+type $env:SystemDrive\autoexec.bat > PSRecon\system\autoexecBat.html 2>&1
+type $env:SystemDrive\config.sys > PSRecon\system\configSys.html 2>&1
+type $env:windir\win.ini > PSRecon\system\winIni.html 2>&1
+type $env:windir\system.ini > PSRecon\system\systemIni.html 2>&1
 $autoexecA = get-content PSRecon\system\autoexecBat.html
 $autoexec = $autoexecA | foreach {$_ + "<br />"}
 $configSysA = get-content PSRecon\system\configSys.html
