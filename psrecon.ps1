@@ -1074,10 +1074,10 @@ function Get-FileHash {
     }
 }
 
-Get-Process | Select-Object Path -Unique | sort | findstr "C:\" | Get-FileHash -Algorithm MD5,SHA1 | ConvertTo-Html -Fragment >> PSRecon\process\process-hashes.html
+Get-Process | Where-Object {-not [string]::IsNullOrEmpty($_.Path)} | Select-Object Path -Unique | sort | Get-FileHash -Algorithm MD5,SHA1 | ConvertTo-Html -Fragment >> PSRecon\process\process-hashes.html
 $processHashes = Get-Content PSRecon\process\process-hashes.html
 
-"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" | Get-FileHash -Algorithm MD5,SHA1 | ConvertTo-Html -Fragment > PSRecon\config\powershell-hashes.html
+"$env:windir\System32\WindowsPowerShell\v1.0\powershell.exe" | Get-FileHash -Algorithm MD5,SHA1 | ConvertTo-Html -Fragment > PSRecon\config\powershell-hashes.html
 $powershellHashes = type PSRecon\config\powershell-hashes.html
 
 Get-ChildItem C:\Users\*\Downloads\ -Recurse | Get-FileHash -Algorithm MD5,SHA1 | ConvertTo-Html -Fragment > PSRecon\web\download-hashes.html
