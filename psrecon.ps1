@@ -1007,7 +1007,7 @@ if(-Not ($email)) {
     $inbox | Select-Object -Property SenderName, Subject, ReceivedTime > PSRecon\web\email-subjects.html
     $inbox | Select Body | findstr http > PSRecon\web\email-links.html
     $getEmailLinks = 'PSRecon\web\email-links.html'
-    $emailLinkRegex = ‘([a-zA-Z]{3,})://([\w-]+\.)+[\w-]+(/[\w- ./?%&=]*)*?’
+    $emailLinkRegex = "([a-zA-Z]{3,})://([\w-]+\.)+[\w-]+(/[\w- ./?%&=]*).*?"
     $emailLinksA = select-string -Path $getEmailLinks -Pattern $emailLinkRegex -AllMatches | % { $_.Matches } | % { $_.Value }
     $emailSubjectsA = Get-Content PSRecon\web\email-subjects.html
     $emailSubjects = $emailSubjectsA | foreach {$_ + "<br />"}
@@ -1021,6 +1021,14 @@ if(-Not ($email)) {
         Write-EventLog -LogName Application -Source "PSRecon" -EntryType Information -EventId 34404 -Message "Forensic Data Acquisition Failure : Missing Required Parameter"
         Exit 1
     }
+}
+
+# PowerShell Profile
+if ( Test-Path $profile ) {
+    $PSprofileA = type $profile
+    $PSProfile = $PSProfileA | foreach {$_ + "<br />"}
+} else {
+    $PSprofile = "<br />No PowerShell Profile File Found:<br /><br />$profile"
 }
 
 #=======================================================================================
@@ -1074,16 +1082,16 @@ function Get-FileHash {
     }
 }
 
-Get-Process | Where-Object {-not [string]::IsNullOrEmpty($_.Path)} | Select-Object Path -Unique | sort | Get-FileHash -Algorithm MD5,SHA1 | ConvertTo-Html -Fragment >> PSRecon\process\process-hashes.html
+Get-Process | Where-Object {-not [string]::IsNullOrEmpty($_.Path)} | Select-Object Path -Unique | sort | Get-FileHash -Algorithm SHA256 | ConvertTo-Html -Fragment >> PSRecon\process\process-hashes.html
 $processHashes = Get-Content PSRecon\process\process-hashes.html
 
-"$env:windir\System32\WindowsPowerShell\v1.0\powershell.exe" | Get-FileHash -Algorithm MD5,SHA1 | ConvertTo-Html -Fragment > PSRecon\config\powershell-hashes.html
+"$env:windir\System32\WindowsPowerShell\v1.0\powershell.exe" | Get-FileHash -Algorithm SHA256 | ConvertTo-Html -Fragment > PSRecon\config\powershell-hashes.html
 $powershellHashes = type PSRecon\config\powershell-hashes.html
 
-Get-ChildItem C:\Users\*\Downloads\ -Recurse | Get-FileHash -Algorithm MD5,SHA1 | ConvertTo-Html -Fragment > PSRecon\web\download-hashes.html
+Get-ChildItem C:\Users\*\Downloads\ -Recurse | Get-FileHash -Algorithm SHA256 | ConvertTo-Html -Fragment > PSRecon\web\download-hashes.html
 $downloadHashes = type PSRecon\web\download-hashes.html
 
-Get-ChildItem PSRecon\ -Recurse -Filter *.html | Get-FileHash -Algorithm MD5,SHA1 | ConvertTo-Html -Fragment > PSRecon\config\e-hashes.html
+Get-ChildItem PSRecon\ -Recurse -Filter *.html | Get-FileHash -Algorithm SHA256 | ConvertTo-Html -Fragment > PSRecon\config\e-hashes.html
 Get-Content PSRecon\config\e-hashes.html | Select-String -pattern 'e-hashes' -notmatch | Out-File PSRecon\config\evidence-hashes.html
 rm PSRecon\config\e-hashes.html -Force
 $evidenceHashes = type PSRecon\config\evidence-hashes.html
@@ -1196,6 +1204,7 @@ $htmlJS = @"
 `$(window).load(function(){
   `$("a.group-toggle5").on('click', function () {
       `$('div.box-content1-config').slideToggle(200).toggleClass('active');
+      `$('div.box-content2-config').slideToggle(200).toggleClass('active');
       `$('div.box-content2-config').slideToggle(200).toggleClass('active');
       return false;
   });
@@ -1403,6 +1412,12 @@ $htmlJS = @"
 `$(window).load(function(){
   `$("a.box-toggle2-config").on('click', function () {
       `$('div.box-content2-config').slideToggle(200).toggleClass('active');
+      return false;
+  });
+});
+`$(window).load(function(){
+  `$("a.box-toggle3-config").on('click', function () {
+      `$('div.box-content3-config').slideToggle(200).toggleClass('active');
       return false;
   });
 });
@@ -2494,6 +2509,16 @@ $powershellVersion
 
        <strong>PowerShell Hashes:</strong>
 $powershellHashes
+</pre>
+</div>
+</div>
+</td></tr>
+<tr><td id="top" class="section" width="50%" valign="top">
+<a id="nav" class="box-toggle3-config" href="#">PowerShell Profile</a>
+<div class="box-content3-config" style="display:none;align:center;">
+<div class="data" style="width:99%;height:400px;overflow:auto;">
+<pre align="left" width="100%">
+$PSProfile
 </pre>
 </div>
 </div>
