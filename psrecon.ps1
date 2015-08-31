@@ -357,6 +357,13 @@ $psversiontable > PSRecon\config\powershell-version.html
 $powershellVersionA = type PSRecon\config\powershell-version.html
 $powershellVersion = $powershellVersionA | foreach {$_ + "<br />"}
 
+Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run > PSRecon\registry\HKLM-Run.html
+$hklmRunA = type PSRecon\registry\HKLM-Run.html
+$hklmRun = $hklmRunA | foreach {$_ + "<br />"}
+Get-ItemProperty HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run > PSRecon\registry\HKCU-Run.html
+$hkcuRunA = type PSRecon\registry\HKCU-Run.html
+$hkcuRun = $hkcuRunA | foreach {$_ + "<br />"}
+
 Get-WmiObject -Namespace root\SecurityCenter2 -Class AntiVirusProduct > PSRecon\process\av.html
 $antiVirusA = type PSRecon\process\av.html
 $antiVirus = $antiVirusA | foreach {$_ + "<br />"}
@@ -1203,6 +1210,7 @@ $htmlJS = @"
       `$('div.box-content3-registry').slideToggle(200).toggleClass('active');
       `$('div.box-content4-registry').slideToggle(200).toggleClass('active');
       `$('div.box-content5-registry').slideToggle(200).toggleClass('active');
+      `$('div.box-content6-registry').slideToggle(200).toggleClass('active');
       return false;
   });
 });
@@ -1411,6 +1419,12 @@ $htmlJS = @"
 `$(window).load(function(){
   `$("a.box-toggle5-registry").on('click', function () {
       `$('div.box-content5-registry').slideToggle(200).toggleClass('active');
+      return false;
+  });
+});
+`$(window).load(function(){
+  `$("a.box-toggle6-registry").on('click', function () {
+      `$('div.box-content6-registry').slideToggle(200).toggleClass('active');
       return false;
   });
 });
@@ -2306,8 +2320,22 @@ $4648
 </div>
 </td></tr>
 <tr><td id="top" class="section" width="50%" valign="top">
-<a id="nav" class="box-toggle5-registry" href="#">PowerShell Scripts</a>
+<a id="nav" class="box-toggle5-registry" href="#">Registry Persistence</a>
 <div class="box-content5-registry" style="display:none;align:center;">
+<div class="data" style="width:99%;height:400px;overflow:auto;">
+<pre align="left" width="100%">
+
+<strong>HKLM:</strong>
+$hklmRun
+<strong>HKCU:</strong>
+$hkcuRun
+</pre>
+</div>
+</div>
+</td></tr>
+<tr><td id="top" class="section" width="50%" valign="top">
+<a id="nav" class="box-toggle6-registry" href="#">PowerShell Scripts</a>
+<div class="box-content6-registry" style="display:none;align:center;">
 <div class="data" style="width:99%;height:400px;overflow:auto;">
 <pre align="left" width="100%">
 $psscripts
