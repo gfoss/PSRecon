@@ -357,6 +357,10 @@ $psversiontable > PSRecon\config\powershell-version.html
 $powershellVersionA = type PSRecon\config\powershell-version.html
 $powershellVersion = $powershellVersionA | foreach {$_ + "<br />"}
 
+Get-WmiObject -Namespace root\SecurityCenter2 -Class AntiVirusProduct > PSRecon\process\av.html
+$antiVirusA = type PSRecon\process\av.html
+$antiVirus = $antiVirusA | foreach {$_ + "<br />"}
+
 # list downloaded files
 dir C:\Users\*\Downloads\* -Recurse | Select Name, CreationTime, LastAccessTime, Attributes | ConvertTo-Html -Fragment > PSRecon\web\downloads.html
 $downloads = type PSRecon\web\downloads.html
@@ -1175,6 +1179,7 @@ $htmlJS = @"
       `$('div.box-content4-process').slideToggle(200).toggleClass('active');
       `$('div.box-content5-process').slideToggle(200).toggleClass('active');
       `$('div.box-content6-process').slideToggle(200).toggleClass('active');
+      `$('div.box-content7-process').slideToggle(200).toggleClass('active');
       return false;
   });
 });
@@ -1322,6 +1327,12 @@ $htmlJS = @"
 `$(window).load(function(){
   `$("a.box-toggle6-process").on('click', function () {
       `$('div.box-content6-process').slideToggle(200).toggleClass('active');
+      return false;
+  });
+});
+`$(window).load(function(){
+  `$("a.box-toggle7-process").on('click', function () {
+      `$('div.box-content7-process').slideToggle(200).toggleClass('active');
       return false;
   });
 });
@@ -2326,8 +2337,18 @@ $software
 </div>
 </td></tr>
 <tr><td id="top" class="section" width="50%" valign="top">
-<a id="nav" class="box-toggle2-process" href="#">Services</a>
+<a id="nav" class="box-toggle2-process" href="#">Anti Virus</a>
 <div class="box-content2-process" style="display:none;align:center;">
+<div class="data" style="width:99%;height:400px;overflow:auto;">
+<pre align="left" width="100%">
+$antiVirus
+</pre>
+</div>
+</div>
+</td></tr>
+<tr><td id="top" class="section" width="50%" valign="top">
+<a id="nav" class="box-toggle3-process" href="#">Services</a>
+<div class="box-content3-process" style="display:none;align:center;">
 <div class="data" style="width:99%;height:400px;overflow:auto;">
 <pre align="left" width="100%">
 $taskDetail
@@ -2336,8 +2357,8 @@ $taskDetail
 </div>
 </td></tr>
 <tr><td id="top" class="section" width="50%" valign="top">
-<a id="nav" class="box-toggle3-process" href="#">Process File Hashes</a>
-<div class="box-content3-process" style="display:none;align:center;">
+<a id="nav" class="box-toggle4-process" href="#">Process File Hashes</a>
+<div class="box-content4-process" style="display:none;align:center;">
 <div class="data" style="width:99%;height:400px;overflow:auto;">
 <pre align="left" width="100%">
 $processHashes
@@ -2346,8 +2367,8 @@ $processHashes
 </div>
 </td></tr>
 <tr><td id="top" class="section" width="50%" valign="top">
-<a id="nav" class="box-toggle4-process" href="#">Service Detail</a>
-<div class="box-content4-process" style="display:none;align:center;">
+<a id="nav" class="box-toggle5-process" href="#">Service Detail</a>
+<div class="box-content5-process" style="display:none;align:center;">
 <div class="data" style="width:99%;height:400px;overflow:auto;">
 <pre align="left" width="100%">
 $serviceDetail
@@ -2356,8 +2377,8 @@ $serviceDetail
 </div>
 </td></tr>
 <tr><td id="top" class="section" width="50%" valign="top">
-<a id="nav" class="box-toggle5-process" href="#">Prefetch Files</a>
-<div class="box-content5-process" style="display:none;align:center;">
+<a id="nav" class="box-toggle6-process" href="#">Prefetch Files</a>
+<div class="box-content6-process" style="display:none;align:center;">
 <div class="data" style="width:99%;height:400px;overflow:auto;">
 <pre align="left" width="100%">
 $prefetch
@@ -2366,8 +2387,8 @@ $prefetch
 </div>
 </td></tr>
 <tr><td id="top" class="section" width="50%" valign="top">
-<a id="nav" class="box-toggle6-process" href="#">AT Jobs</a>
-<div class="box-content6-process" style="display:none;align:center;">
+<a id="nav" class="box-toggle7-process" href="#">AT Jobs</a>
+<div class="box-content7-process" style="display:none;align:center;">
 <div class="data" style="width:99%;height:400px;overflow:auto;">
 <pre align="left" width="100%">
 $at
