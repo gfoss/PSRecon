@@ -1205,7 +1205,7 @@ $htmlJS = @"
   `$("a.group-toggle5").on('click', function () {
       `$('div.box-content1-config').slideToggle(200).toggleClass('active');
       `$('div.box-content2-config').slideToggle(200).toggleClass('active');
-      `$('div.box-content2-config').slideToggle(200).toggleClass('active');
+      `$('div.box-content3-config').slideToggle(200).toggleClass('active');
       return false;
   });
 });
