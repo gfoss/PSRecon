@@ -1039,7 +1039,7 @@ if ( Test-Path $profile ) {
     $PSprofileA = type $profile
     $PSProfile = $PSProfileA | foreach {$_ + "<br />"}
 } else {
-    $PSprofile = "<br />No PowerShell Profile File Found:<br /><br />$profile"
+    $PSprofile = "<br />No PowerShell Profile File Found:<br /><br />"
 }
 
 #=======================================================================================
@@ -2567,6 +2567,8 @@ $powershellHashes
 <div class="box-content3-config" style="display:none;align:center;">
 <div class="data" style="width:99%;height:400px;overflow:auto;">
 <pre align="left" width="100%">
+$profile
+<br />
 $PSProfile
 </pre>
 </div>
