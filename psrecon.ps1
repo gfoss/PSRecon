@@ -365,6 +365,7 @@ $startupDrivers = reg query hklm\system\currentcontrolset\services /s | Select-S
 $shadyDrivers = $startupDrivers | Select-String -pattern "^\s*?ImagePath.*?(user|temp).*?\\.*?\.(sys|exe)$"
 $startupDrivers = $startupDrivers | ConvertTo-Html
 $shadyDrivers = $shadyDrivers | ConvertTo-Html
+$startupDrivers > PSRecon\registry\startup-drivers.html
 
 Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run > PSRecon\registry\HKLM-Run.html
 $hklmRunA = type PSRecon\registry\HKLM-Run.html
