@@ -3,7 +3,8 @@
 		PSRecon
         PowerShell Incident Response - Live Forensic Data Acquisition
 		Greg Foss | @heinzarelli | greg.foss@logrhythm.com
-		v0.1 -- August 5, 2015
+        Released at BlackHat 2015
+		v0.2 -- October 2015
 
 ## [About]
 

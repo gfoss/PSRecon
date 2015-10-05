@@ -3,8 +3,8 @@
   #==========================================#
   # LogRhythm Labs                           #
   # Incident Response Live Data Acquisition  #
-  # greg . foss @ logrhythm.com              #
-  # v0.1  --  August  5, 2015                #
+  # greg . foss @ logrhythm . com            #
+  # v0.2  --  October, 2015                  #
   #==========================================#
 
 # Copyright 2015 LogRhythm Inc.   
@@ -120,6 +120,7 @@ The safest way to run this script is locally, however remote execution is possib
     The script currently gathers the following data:
       -ARP Table
       -AT Jobs
+      -Anti Virus Engine(s) installed
       -Capture Host Screenshot
       -Command History
       -DNS Cache
@@ -145,6 +146,7 @@ The safest way to run this script is locally, however remote execution is possib
       -Scheduled Tasks
       -Service Details
       -Startup Information
+      -Startup Drivers
       -USB Device History
       -User and Admin Information
       -Windows Patches
@@ -356,6 +358,13 @@ $systemIni = $systemIniA | foreach {$_ + "<br />"}
 $psversiontable > PSRecon\config\powershell-version.html
 $powershellVersionA = type PSRecon\config\powershell-version.html
 $powershellVersion = $powershellVersionA | foreach {$_ + "<br />"}
+
+# Startup Drivers
+# Thanks Mark Vankempen!
+$startupDrivers = reg query hklm\system\currentcontrolset\services /s | Select-String -pattern "^\s*?ImagePath.*?\.sys$"
+$shadyDrivers = $startupDrivers | Select-String -pattern "^\s*?ImagePath.*?(user|temp).*?\\.*?\.(sys|exe)$"
+$startupDrivers = $startupDrivers | ConvertTo-Html
+$shadyDrivers = $shadyDrivers | ConvertTo-Html
 
 Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run > PSRecon\registry\HKLM-Run.html
 $hklmRunA = type PSRecon\registry\HKLM-Run.html
@@ -1211,6 +1220,8 @@ $htmlJS = @"
       `$('div.box-content4-registry').slideToggle(200).toggleClass('active');
       `$('div.box-content5-registry').slideToggle(200).toggleClass('active');
       `$('div.box-content6-registry').slideToggle(200).toggleClass('active');
+      `$('div.box-content7-registry').slideToggle(200).toggleClass('active');
+      `$('div.box-content8-registry').slideToggle(200).toggleClass('active');
       return false;
   });
 });
@@ -1425,6 +1436,18 @@ $htmlJS = @"
 `$(window).load(function(){
   `$("a.box-toggle6-registry").on('click', function () {
       `$('div.box-content6-registry').slideToggle(200).toggleClass('active');
+      return false;
+  });
+});
+`$(window).load(function(){
+  `$("a.box-toggle7-registry").on('click', function () {
+      `$('div.box-content7-registry').slideToggle(200).toggleClass('active');
+      return false;
+  });
+});
+`$(window).load(function(){
+  `$("a.box-toggle8-registry").on('click', function () {
+      `$('div.box-content8-registry').slideToggle(200).toggleClass('active');
       return false;
   });
 });
@@ -2334,8 +2357,28 @@ $hkcuRun
 </div>
 </td></tr>
 <tr><td id="top" class="section" width="50%" valign="top">
-<a id="nav" class="box-toggle6-registry" href="#">PowerShell Scripts</a>
+<a id="nav" class="box-toggle6-registry" href="#">Startup Drivers</a>
 <div class="box-content6-registry" style="display:none;align:center;">
+<div class="data" style="width:99%;height:400px;overflow:auto;">
+<pre align="left" width="100%">
+$startupDrivers
+</pre>
+</div>
+</div>
+</td></tr>
+<tr><td id="top" class="section" width="50%" valign="top">
+<a id="nav" class="box-toggle7-registry" href="#">User and Temp Startup Drivers</a>
+<div class="box-content7-registry" style="display:none;align:center;">
+<div class="data" style="width:99%;height:400px;overflow:auto;">
+<pre align="left" width="100%">
+$shadyDrivers
+</pre>
+</div>
+</div>
+</td></tr>
+<tr><td id="top" class="section" width="50%" valign="top">
+<a id="nav" class="box-toggle8-registry" href="#">PowerShell Scripts</a>
+<div class="box-content8-registry" style="display:none;align:center;">
 <div class="data" style="width:99%;height:400px;overflow:auto;">
 <pre align="left" width="100%">
 $psscripts
