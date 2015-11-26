@@ -198,8 +198,7 @@ If (Test-Path $exists){
 #=======================================================================================
 
 # Get user and admin info
-whoami > PSRecon\config\whoami.html
-$whoami = type PSRecon\config\whoami.html
+$whoami = $env:username
 qwinsta > PSRecon\config\activeUsers.html
 $activeUsersA = type PSRecon\config\activeUsers.html
 $activeUsers = $activeUsersA | foreach {$_ + "<br />"}
@@ -2152,8 +2151,7 @@ c65 -34 88 -85 100 -226 12 -131 -1 -308 -26 -371 -22 -56 -63 -87 -130 -101
 <div class="data" style="width:98%;height:400px;overflow:auto;">
 <pre align="left">
 
-Whoami:
-  $whoami
+Whoami: $whoami
 
 Current Active Users:
     $activeUsers
