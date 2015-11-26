@@ -259,8 +259,7 @@ $dnsCache = Get-DnsClientCache -Status 'Success' | Select Name, Data | ConvertTo
 $netstat = netstat -ant | select -skip 4 | ConvertFrom-String -PropertyNames none, proto,ipsrc,ipdst,state,state2,none,none | select ipsrc,ipdst,state | ConvertTo-Html -Fragment}
 
 # Display Listening Processes
-netstat -ano | findstr -i listening | ForEach-Object { $_ -split "\s+|\t+" } | findstr /r "^[1-9+]*$" | sort | unique | ForEach-Object { Get-Process -Id $_ } | Select ProcessName,Path,Company,Description | ConvertTo-Html > PSRecon\network\net-processes.html
-$listeningProcesses = Get-Content PSRecon\network\net-processes.html
+$listeningProcesses = netstat -ano | findstr -i listening | ForEach-Object { $_ -split "\s+|\t+" } | findstr /r "^[1-9+]*$" | sort | unique | ForEach-Object { Get-Process -Id $_ } | Select ProcessName,Path,Company,Description | ConvertTo-Html -Fragment > PSRecon\network\net-processes.html
 
 # ARP table
 arp -a > PSRecon\network\arp.html
