@@ -328,8 +328,7 @@ Get-Acl | Select AccessToString, Owner, Group, Sddl | ConvertTo-Html -Fragment >
 $acl = type PSRecon\system\acl.html
 
 # Gathering Windows version information
-[Environment]::OSVersion | ConvertTo-Html -Fragment > PSRecon\system\os-version.html
-$version = type PSRecon\system\os-version.html
+$version = [Environment]::OSVersion | ConvertTo-Html -Fragment
 
 # Dumping the startup information
 type $env:SystemDrive\autoexec.bat > PSRecon\system\autoexecBat.html 2>&1
