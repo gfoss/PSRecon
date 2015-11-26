@@ -244,8 +244,7 @@ $schtasks = Get-ScheduledTask | where state -EQ 'ready' | Get-ScheduledTaskInfo 
 $hotfix = get-hotfix | Where-Object {$_.Description -ne ''} | select Description,HotFixID,InstalledBy | ConvertTo-Html -Fragment
 
 # Gathering Process Information
-tasklist /V /FO CSV | ConvertFrom-Csv | ConvertTo-Html -Fragment > PSRecon\process\user-tasks.html
-$taskDetail = type PSRecon\process\user-tasks.html
+$taskDetail = tasklist /V /FO CSV | ConvertFrom-Csv | ConvertTo-Html -Fragment > PSRecon\process\user-tasks.html
 
 # Gather Windows Service Data
 Get-WmiObject win32_service | Select-Object Name, DisplayName, PathName, StartName, StartMode, State, TotalSessions, Description > PSRecon\process\service-detail.html
@@ -282,16 +281,13 @@ $hosts = Import-Csv $env:windir\system32\drivers\etc\hosts | ConvertTo-Html -Fra
 $networks = Import-Csv $env:windir\system32\drivers\etc\networks | ConvertTo-Html -Fragment
 
 # Gather Currently Installed Software
-Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* |  Select-Object DisplayName, DisplayVersion, Publisher, InstallDate | ConvertTo-Html -Fragment > PSRecon\process\software.html
-$software = type PSRecon\process\software.html
+$software = Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* |  Select-Object DisplayName, DisplayVersion, Publisher, InstallDate | ConvertTo-Html -Fragment > PSRecon\process\software.html
 
 # List Recently Used USB Devices
-Get-ItemProperty -Path HKLM:\SYSTEM\CurrentControlSet\Enum\USBSTOR\*\* | Select FriendlyName | ConvertTo-Html -Fragment > PSRecon\system\usb.html
-$usb = type PSRecon\system\usb.html
+$usb = Get-ItemProperty -Path HKLM:\SYSTEM\CurrentControlSet\Enum\USBSTOR\*\* | Select FriendlyName | ConvertTo-Html -Fragment > PSRecon\system\usb.html
 
 # Gather command history
-Get-History | ConvertTo-Html -Fragment > PSRecon\system\command-line-history.html
-$commandHist = type PSRecon\system\command-line-history.html
+$commandHist = Get-History | ConvertTo-Html -Fragment
 
 # Dumping the firewall information
 echo "Firewall State" > PSRecon\system\firewall-config.html
@@ -305,8 +301,7 @@ $firewall = $firewallA | foreach {$_ + "<br />"}
 $firewall > PSRecon\system\firewall-config.html
 
 # Saving the Environment
-Get-ChildItem ENV: | Select Name, Value | ConvertTo-Html -Fragment > PSRecon\system\environment.html
-$set = type PSRecon\system\environment.html
+$set = Get-ChildItem ENV: | Select Name, Value | ConvertTo-Html -Fragment
 
 # Return GPResult Output
 & $env:windir\system32\gpresult.exe /v > PSRecon\system\gpresult.html
@@ -319,8 +314,7 @@ $smbSessionA = get-content PSRecon\network\smbsessions.html
 $smbSession = $smbSessionS | foreach {$_ + "<br />"}
 
 # Get ACL's
-Get-Acl | Select AccessToString, Owner, Group, Sddl | ConvertTo-Html -Fragment > PSRecon\system\acl.html
-$acl = type PSRecon\system\acl.html
+$acl = Get-Acl | Select AccessToString, Owner, Group, Sddl | ConvertTo-Html -Fragment
 
 # Gathering Windows version information
 $version = [Environment]::OSVersion | ConvertTo-Html -Fragment
