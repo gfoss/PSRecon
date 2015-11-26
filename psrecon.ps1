@@ -240,10 +240,8 @@ $at = $atA | foreach {$_ + "<br />"}
 # Gathering list of Scheduled Tasks
 $schtasks = Get-ScheduledTask | where state -EQ 'ready' | Get-ScheduledTaskInfo | Sort TaskPath |Select TaskName, TaskPath | ConvertTo-Html -Fragment
 
-# Extract security update data
-get-hotfix | Where-Object {$_.Description -ne ''} | select Description,HotFixID,InstalledBy | format-list > PSRecon\system\hotfix-status.html
-$hotfixA = get-content PSRecon\system\hotfix-status.html
-$hotfix = $hotfixA | foreach {$_ + "<br />"}
+# Extract Installed Hotfix 
+$hotfix = get-hotfix | Where-Object {$_.Description -ne ''} | select Description,HotFixID,InstalledBy | ConvertTo-Html -Fragment
 
 # Gathering Process Information
 tasklist /V /FO CSV | ConvertFrom-Csv | ConvertTo-Html -Fragment > PSRecon\process\user-tasks.html
