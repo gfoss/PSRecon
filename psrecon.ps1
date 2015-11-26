@@ -255,7 +255,7 @@ $serviceDetail = $serviceDetailA | foreach {$_ + "<br />"}
 $dnsCache = Get-DnsClientCache -Status 'Success' | Select Name, Data | ConvertTo-Html -Fragment
 
 # Netstat information
-$netstat = netstat -ant | select -skip 4 | ConvertFrom-String -PropertyNames none, proto,ipsrc,ipdst,state,state2,none,none | select ipsrc,ipdst,state | ConvertTo-Html -Fragment}
+$netstat = netstat -ant | select -skip 4 | ConvertFrom-String -PropertyNames none, proto,ipsrc,ipdst,state,state2,none,none | select ipsrc,ipdst,state | ConvertTo-Html -Fragment
 
 # Display Listening Processes
 $listeningProcesses = netstat -ano | findstr -i listening | ForEach-Object { $_ -split "\s+|\t+" } | findstr /r "^[1-9+]*$" | sort | unique | ForEach-Object { Get-Process -Id $_ } | Select ProcessName,Path,Company,Description | ConvertTo-Html -Fragment > PSRecon\network\net-processes.html
