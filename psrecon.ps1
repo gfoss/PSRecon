@@ -238,9 +238,7 @@ $atA = get-content PSRecon\process\at-jobs.html
 $at = $atA | foreach {$_ + "<br />"}
 
 # Gathering list of Scheduled Tasks
-schtasks > PSRecon\system\schtasks.html
-$schtasksA = get-content PSRecon\system\schtasks.html
-$schtasks = $schtasksA | foreach {$_ + "<br />"}
+$schtasks = Get-ScheduledTask | where state -EQ 'ready' | Get-ScheduledTaskInfo | Sort TaskPath |Select TaskName, TaskPath | ConvertTo-Html -Fragment
 
 # Extract security update data
 get-hotfix | Where-Object {$_.Description -ne ''} | select Description,HotFixID,InstalledBy | format-list > PSRecon\system\hotfix-status.html
