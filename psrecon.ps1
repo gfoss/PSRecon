@@ -244,7 +244,7 @@ $schtasks = Get-ScheduledTask | where state -EQ 'ready' | Get-ScheduledTaskInfo 
 $hotfix = get-hotfix | Where-Object {$_.Description -ne ''} | select Description,HotFixID,InstalledBy | ConvertTo-Html -Fragment
 
 # Gathering Process Information
-$taskDetail = tasklist /V /FO CSV | ConvertFrom-Csv | ConvertTo-Html -Fragment > PSRecon\process\user-tasks.html
+$taskDetail = tasklist /V /FO CSV | ConvertFrom-Csv | ConvertTo-Html -Fragment
 
 # Gather Windows Service Data
 Get-WmiObject win32_service | Select-Object Name, DisplayName, PathName, StartName, StartMode, State, TotalSessions, Description > PSRecon\process\service-detail.html
@@ -353,8 +353,7 @@ $hkcuRun = Get-ItemProperty HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run 
 $antiVirus = Get-WmiObject -Namespace root\SecurityCenter2 -Class AntiVirusProduct | ConvertTo-Html -as List -Fragment 
 
 # list downloaded files
-dir C:\Users\*\Downloads\* -Recurse | Select Name, CreationTime, LastAccessTime, Attributes | ConvertTo-Html -Fragment > PSRecon\web\downloads.html
-$downloads = type PSRecon\web\downloads.html
+$downloads = dir C:\Users\*\Downloads\* -Recurse | Select Name, CreationTime, LastAccessTime, Attributes | ConvertTo-Html -Fragment > PSRecon\web\downloads.html
 
 # Extract Prefetch File Listing
 # script stolen from:
@@ -1097,11 +1096,9 @@ function Get-FileHash {
 Get-Process | Where-Object {-not [string]::IsNullOrEmpty($_.Path)} | Select-Object Path -Unique | sort | Get-FileHash -Algorithm SHA256 | ConvertTo-Html -Fragment >> PSRecon\process\process-hashes.html
 $processHashes = Get-Content PSRecon\process\process-hashes.html
 
-"$env:windir\System32\WindowsPowerShell\v1.0\powershell.exe" | Get-FileHash -Algorithm SHA256 | ConvertTo-Html -Fragment > PSRecon\config\powershell-hashes.html
-$powershellHashes = type PSRecon\config\powershell-hashes.html
+$powershellHashes = "$env:windir\System32\WindowsPowerShell\v1.0\powershell.exe" | Get-FileHash -Algorithm SHA256 | ConvertTo-Html -Fragment
 
-Get-ChildItem C:\Users\*\Downloads\ -Recurse | Get-FileHash -Algorithm SHA256 | ConvertTo-Html -Fragment > PSRecon\web\download-hashes.html
-$downloadHashes = type PSRecon\web\download-hashes.html
+$downloadHashes = Get-ChildItem C:\Users\*\Downloads\ -Recurse | Get-FileHash -Algorithm SHA256 | ConvertTo-Html -Fragment > PSRecon\web\download-hashes.html
 
 Get-ChildItem PSRecon\ -Recurse -Filter *.html | Get-FileHash -Algorithm SHA256 | ConvertTo-Html -Fragment > PSRecon\config\e-hashes.html
 Get-Content PSRecon\config\e-hashes.html | Select-String -pattern 'e-hashes' -notmatch | Out-File PSRecon\config\evidence-hashes.html
