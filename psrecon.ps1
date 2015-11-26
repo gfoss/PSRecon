@@ -272,9 +272,7 @@ $arpA = get-content PSRecon\network\arp.html
 $arp = $arpA | foreach {$_ + "<br />"}
 
 # Gathering information about running services
-net start > PSRecon\network\netservices.html
-$netServicesA = get-content PSRecon\network\netservices.html
-$netServices = $netServicesA | foreach {$_ + "<br />"}
+$netServices = Get-Service | where-object {$_.Status -eq "Running"} | Select Name, DisplayName | ConvertTo-Html -fragment
 
 #Gathering information about open shares
 net user > PSRecon\system\netuser.html
