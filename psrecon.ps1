@@ -261,9 +261,7 @@ $netstat = netstat -ant | select -skip 4 | ConvertFrom-String -PropertyNames non
 $listeningProcesses = netstat -ano | findstr -i listening | ForEach-Object { $_ -split "\s+|\t+" } | findstr /r "^[1-9+]*$" | sort | unique | ForEach-Object { Get-Process -Id $_ } | Select ProcessName,Path,Company,Description | ConvertTo-Html -Fragment > PSRecon\network\net-processes.html
 
 # ARP table
-arp -a > PSRecon\network\arp.html
-$arpA = get-content PSRecon\network\arp.html
-$arp = $arpA | foreach {$_ + "<br />"}
+$arp = arp -a | select -skip 3 | ConvertFrom-String -PropertyNames none,IP,MAC,Type | Select IP,MAC,Type | ConvertTo-Html -Fragment
 
 # Gathering information about running services
 $netServices = Get-Service | where-object {$_.Status -eq "Running"} | Select Name, DisplayName | ConvertTo-Html -fragment
