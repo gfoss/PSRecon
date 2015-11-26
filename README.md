@@ -8,7 +8,7 @@
 
 ## [About]
 
-Blog Post => https://blog.logrhythm.com/digital-forensics/psrecon/
+Blog Post => https://logrhythm.com/blog/psrecon/
 
 PSRecon gathers data from a remote Windows host using PowerShell (v2 or later), organizes the data into folders, hashes all extracted data, hashes PowerShell and various system properties, and sends the data off to the security team. The data can be pushed to a share, sent over email, or retained locally.
 
