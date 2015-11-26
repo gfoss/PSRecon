@@ -865,7 +865,7 @@ if ( $remote -eq $true ) {
     }
     Function Find-PSScriptsInPSAppLog {
         $ReturnInfo = @{}
-        $Logs = Get-WinEvent -LogName "Microsoft-Windows-PowerShell/Operational" -ErrorAction SilentlyContinue | Where {$_.Id -eq 4100}
+        $Logs = Get-WinEvent -LogName "Microsoft-Windows-PowerShell/Operational" -FilterXPath "*[System[EventID=4100]]" -ErrorAction SilentlyContinue
 
         foreach ($Log in $Logs)
         {
