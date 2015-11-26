@@ -133,6 +133,7 @@ The safest way to run this script is locally, however remote execution is possib
       -Host File Information
       -IP Address
       -Netstat Information
+	  -Last File Created
       -List Open Shares
       -Local PowerShell Scripts
       -Logon Data
@@ -1052,6 +1053,23 @@ if ( Test-Path $profile ) {
     $PSprofile = "<br />No PowerShell Profile File Found:<br /><br />"
 }
 
+# Last File Created
+$Nb_day = -7
+$Driveletter = ([System.IO.DriveInfo]::getdrives() | Where-Object {$_.DriveType -ne 'Network'} | Select-Object -ExpandProperty Name)
+$MinDate = ((Get-Date).AddDays($Nb_day).ToString("MM/dd/yyyy"))
+
+# Potential Dangerous Programs, Scripts, Shortcuts, Office Macros, PDF 
+
+$File_Extension = @("*.exe","*.pif","*.application","*.gadget","*.msi","*.msp","*.com","*.scr","*.hta","*.cpl","*.msc","*.jar","*.bat","*.cmd","*.vb","*.vbs","*.vbe","*.js","*.jse","*.ws","*.wsf","*.wsc","*.wsh","*.wsh","*.ps1","*.ps1xml","*.ps2","*.ps2xml","*.psc1","*.psc2","*.msh","*.msh1","*.msh2","*.mshxml","*.msh1xml","*.msh2xml","*.scf","*.lnk","*.inf","*.reg","*.doc","*.xls","*.ppt","*.docm","*.dotm","*.xlsm","*.xltm","*.xlam","*.pptm","*.potm","*.ppam","*.ppsm","*.sldm","*.pdf")
+
+
+
+Foreach ( $item in $Driveletter)
+ {	
+	$Drive = $item -creplace '^*\\', ''
+	 $DangerousFiles = $DangerousFiles + (Get-ChildItem $Drive -Recurse -ErrorAction $ErrorActionPreference -include $File_Extension | Where-Object { $_.CreationTime -ge $MinDate } | Select-Object FullName, CreationTime, LastAccessTime, LastWriteTime, @{Name="Kbytes";Expression={$_.Length / 1Kb}} |Sort-Object CreationTime)
+}
+$DangerousFiles = $DangerousFiles | ConvertTo-Html -Fragment
 #=======================================================================================
 # Evidence Verification
 #=======================================================================================
@@ -1353,6 +1371,12 @@ $htmlJS = @"
 `$(window).load(function(){
   `$("a.box-toggle7-process").on('click', function () {
       `$('div.box-content7-process').slideToggle(200).toggleClass('active');
+      return false;
+  });
+});
+`$(window).load(function(){
+  `$("a.box-toggle8-process").on('click', function () {
+      `$('div.box-content8-process').slideToggle(200).toggleClass('active');
       return false;
   });
 });
@@ -2404,6 +2428,16 @@ $psscripts
 <div class="data" style="width:99%;height:400px;overflow:auto;">
 <pre align="left" width="100%">
 $software
+</pre>
+</div>
+</div>
+</td></tr>
+<tr><td id="top" class="section" width="50%" valign="top">
+<a id="nav" class="box-toggle2-process" href="#">Potential Dangerous Files</a>
+<div class="box-content2-process" style="display:none;align:center;">
+<div class="data" style="width:99%;height:400px;overflow:auto;">
+<pre align="left" width="100%">
+$DangerousFiles
 </pre>
 </div>
 </div>
