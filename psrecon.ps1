@@ -356,12 +356,9 @@ $startupDrivers = $startupDrivers | ConvertTo-Html
 $shadyDrivers = $shadyDrivers | ConvertTo-Html
 $startupDrivers > PSRecon\registry\startup-drivers.html
 
-Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run > PSRecon\registry\HKLM-Run.html
-$hklmRunA = type PSRecon\registry\HKLM-Run.html
-$hklmRun = $hklmRunA | foreach {$_ + "<br />"}
-Get-ItemProperty HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run > PSRecon\registry\HKCU-Run.html
-$hkcuRunA = type PSRecon\registry\HKCU-Run.html
-$hkcuRun = $hkcuRunA | foreach {$_ + "<br />"}
+# Registry: Run
+$hklmRun = Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run | ConvertTo-Html -as List -Fragment
+$hkcuRun = Get-ItemProperty HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run | ConvertTo-Html -as List -Fragment
 
 Get-WmiObject -Namespace root\SecurityCenter2 -Class AntiVirusProduct > PSRecon\process\av.html
 $antiVirusA = type PSRecon\process\av.html
