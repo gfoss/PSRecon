@@ -360,9 +360,8 @@ $startupDrivers > PSRecon\registry\startup-drivers.html
 $hklmRun = Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run | ConvertTo-Html -as List -Fragment
 $hkcuRun = Get-ItemProperty HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run | ConvertTo-Html -as List -Fragment
 
-Get-WmiObject -Namespace root\SecurityCenter2 -Class AntiVirusProduct > PSRecon\process\av.html
-$antiVirusA = type PSRecon\process\av.html
-$antiVirus = $antiVirusA | foreach {$_ + "<br />"}
+# Antivirus
+$antiVirus = Get-WmiObject -Namespace root\SecurityCenter2 -Class AntiVirusProduct | ConvertTo-Html -as List -Fragment 
 
 # list downloaded files
 dir C:\Users\*\Downloads\* -Recurse | Select Name, CreationTime, LastAccessTime, Attributes | ConvertTo-Html -Fragment > PSRecon\web\downloads.html
