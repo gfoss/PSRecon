@@ -341,8 +341,8 @@ $powershellVersion = $powershellVersionA | foreach {$_ + "<br />"}
 # Thanks Mark Vankempen!
 $startupDrivers = reg query hklm\system\currentcontrolset\services /s | Select-String -pattern "^\s*?ImagePath.*?\.sys$"
 $shadyDrivers = $startupDrivers | Select-String -pattern "^\s*?ImagePath.*?(user|temp).*?\\.*?\.(sys|exe)$"
-$startupDrivers = $startupDrivers | ConvertTo-Html
-$shadyDrivers = $shadyDrivers | ConvertTo-Html
+$startupDrivers = $startupDrivers | ConvertTo-Html -Fragment
+$shadyDrivers = $shadyDrivers | ConvertTo-Html -Fragment
 $startupDrivers > PSRecon\registry\startup-drivers.html
 
 # Registry: Run
