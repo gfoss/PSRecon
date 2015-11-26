@@ -283,12 +283,8 @@ $sharesA = get-content PSRecon\network\shares.html
 $shares = $sharesA | foreach {$_ + "<br />"}
 
 # Gathering host file information
-type $env:windir\system32\drivers\etc\hosts > PSRecon\network\etchosts.html
-type $env:windir\system32\drivers\etc\networks > PSRecon\network\etcnetworks.html
-$hostsA = get-content PSRecon\network\etchosts.html
-$hosts = $hostsA | foreach {$_ + "<br />"}
-$networksA = get-content PSRecon\network\etcnetworks.html
-$networks = $networksA | foreach {$_ + "<br />"}
+$hosts = Import-Csv $env:windir\system32\drivers\etc\hosts | ConvertTo-Html -Fragment
+$networks = Import-Csv $env:windir\system32\drivers\etc\networks | ConvertTo-Html -Fragment
 
 # Gather Currently Installed Software
 Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* |  Select-Object DisplayName, DisplayVersion, Publisher, InstallDate | ConvertTo-Html -Fragment > PSRecon\process\software.html
