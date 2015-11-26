@@ -255,9 +255,7 @@ $serviceDetailA = get-content PSRecon\process\service-detail.html
 $serviceDetail = $serviceDetailA | foreach {$_ + "<br />"}
 
 # DNS Cache
-ipconfig -displaydns > PSRecon\network\dnscache.html 2> PSRecon\network\dnserror.html
-$dnsCacheA = get-content PSRecon\network\dnscache.html
-$dnsCache = $dnsCacheA | foreach {$_ + "<br />"}
+$dnsCache = Get-DnsClientCache -Status 'Success' | Select Name, Data | ConvertTo-Html -Fragment
 
 # Netstat information
 netstat -ant > PSRecon\network\netstat.html 2> PSRecon\network\netstaterror.html
