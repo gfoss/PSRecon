@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<remv1:Remediation-Plugin xmlns:remv1="RemediationVersion1.xsd" Name="PSRecon">
+
+<!--Gather Local Data and Run Desired Switch Parameters-->
+  <remv1:Action Name="Local : Extract Data : Pass Additional Arguments" Command="powershell.exe">
+    <remv1:ConstantParameter Name="Script" Switch="-file psrecon.ps1" Order="1" />
+    <remv1:StringParameter Name="Company Name" Switch="-companyName " Order="2" />
+    <remv1:StringParameter Name="Command Line Parameters" Switch="" Order="3" />
+  </remv1:Action>
+
+<!--Gather Remote Data and Send Report via Email-->
+  <remv1:Action Name="Remote : Extract Data : Email Report" Command="powershell.exe">
+    <remv1:ConstantParameter Name="Script" Switch="-file psrecon.ps1 -remote" Order="1" />
+    <remv1:StringParameter Name="Target Host" Switch="-target " Order="2">
+      <remv1:DefaultInput>
+        <remv1:DHostName />
+      </remv1:DefaultInput>
+    </remv1:StringParameter>
+    <remv1:StringParameter Name="SMTP Server" Switch="-sendEmail -smtpServer " Order="3" />
+    <remv1:StringParameter Name="Send Email To" Switch="-emailTo " Order="4" />
+    <remv1:StringParameter Name="Send Email From" Switch="-emailFrom " Order="5" />
+    <remv1:StringParameter Name="Privileged Username" Switch="-username " Order="6" />
+    <remv1:EncryptedParameter>
+      <remv1:StringParameter Name="Privileged Password" Switch="-password " Order="7" />
+    </remv1:EncryptedParameter>
+    <remv1:StringParameter Name="Company Name" Switch="-companyName " Order="8" />
+  </remv1:Action>
+
+<!--Gather Remote Data, including client email and Send Report via Email-->
+  <remv1:Action Name="Remote : Extract Data and Emails : Email Report" Command="powershell.exe">
+    <remv1:ConstantParameter Name="Script" Switch="-file psrecon.ps1 -email -remote" Order="1" />
+    <remv1:StringParameter Name="Target Host" Switch="-target " Order="2">
+      <remv1:DefaultInput>
+        <remv1:DHostName />
+      </remv1:DefaultInput>
+    </remv1:StringParameter>
+    <remv1:StringParameter Name="SMTP Server" Switch="-sendEmail -smtpServer " Order="3" />
+    <remv1:StringParameter Name="Send Email To" Switch="-emailTo " Order="4" />
+    <remv1:StringParameter Name="Send Email From" Switch="-emailFrom " Order="5" />
+    <remv1:StringParameter Name="Privileged Username" Switch="-username " Order="6" />
+    <remv1:EncryptedParameter>
+      <remv1:StringParameter Name="Privileged Password" Switch="-password " Order="7" />
+    </remv1:EncryptedParameter>
+    <remv1:StringParameter Name="Company Name" Switch="-companyName " Order="8" />
+  </remv1:Action>
+
+  <!--Remote Lockdown and Quarantine-->
+  <remv1:Action Name="Remote : Extract Data : Lockdown and Quarantine" Command="powershell.exe">
+    <remv1:ConstantParameter Name="Script" Switch="-file psrecon.ps1 -lockdown" Order="1" />
+    <remv1:StringParameter Name="Target Host" Switch="-target " Order="2">
+      <remv1:DefaultInput>
+        <remv1:DHostName />
+      </remv1:DefaultInput>
+    </remv1:StringParameter>
+    <remv1:StringParameter Name="SMTP Server" Switch="-sendEmail -smtpServer " Order="3" />
+    <remv1:StringParameter Name="Send Email To" Switch="-emailTo " Order="4" />
+    <remv1:StringParameter Name="Send Email From" Switch="-emailFrom " Order="5" />
+    <remv1:StringParameter Name="Privileged Username" Switch="-username " Order="6" />
+    <remv1:EncryptedParameter>
+      <remv1:StringParameter Name="Privileged Password" Switch="-password " Order="7" />
+    </remv1:EncryptedParameter>
+    <remv1:StringParameter Name="Company Name" Switch="-companyName " Order="8" />
+  </remv1:Action>
+
+<!--Disable AD Account and Host Lockdown-->
+  <remv1:Action Name="Remote : Extract Data : Disable AD Account" Command="powershell.exe">
+    <remv1:ConstantParameter Name="Script" Switch="-file psrecon.ps1 -lockdown -adLock" Order="1" />
+    <remv1:StringParameter Name="Target Account" Switch="" Order="2">
+      <remv1:DefaultInput>
+        <remv1:Login />
+      </remv1:DefaultInput>
+    </remv1:StringParameter>
+    <remv1:StringParameter Name="Target Host" Switch="-target " Order="3">
+      <remv1:DefaultInput>
+        <remv1:SHostName />
+      </remv1:DefaultInput>
+    </remv1:StringParameter>
+    <remv1:StringParameter Name="Target Share" Switch="-netShare " Order="4" />
+    <remv1:StringParameter Name="SMTP Server" Switch="-sendEmail -smtpServer " Order="5" />
+    <remv1:StringParameter Name="Send Email To" Switch="-emailTo " Order="6" />
+    <remv1:StringParameter Name="Send Email From" Switch="-emailFrom " Order="7" />
+    <remv1:StringParameter Name="Privileged Username" Switch="-username " Order="8" />
+    <remv1:EncryptedParameter>
+      <remv1:StringParameter Name="Privileged Password" Switch="-password " Order="9" />
+    </remv1:EncryptedParameter>
+    <remv1:StringParameter Name="Company Name" Switch="-companyName " Order="10" />
+  </remv1:Action>
+</remv1:Remediation-Plugin>
