@@ -24,12 +24,12 @@ Ideally, this script should be integrated with the organization's Active Defense
 
 ## [How To]
 
-#####Run PSRecon on local host:
+##### Run PSRecon on local host:
 
  	PS C:\> .\psrecon.ps1
         This gathers default data and stores the results in the directory that the script was executed from.
 
-#####Run PSRecon on remote host:
+##### Run PSRecon on remote host:
 
     PS C:\> .\psrecon.ps1 -remote -target [computer]
         This gathers default data and stores the results in the script directory.
@@ -39,7 +39,7 @@ Ideally, this script should be integrated with the organization's Active Defense
         You will need to ensure that psremoting and unsigned execution is enabled on the remote host.  <== dangerous to leave enabled!!
         Be careful, this may inadvertently expose administrative credentials when authenticating to a compromised host.
 
-#####What if PSRemoting and Unrestricted Execution are disabled?
+##### What if PSRemoting and Unrestricted Execution are disabled?
 
     Remotely enable PSRemoting and Unrestricted PowerShell Execution using PsExec and PSSession, then run PSRecon
 
@@ -114,15 +114,15 @@ Ideally, this script should be integrated with the organization's Active Defense
 
 ![remote](/images/remote-data-capture.png)
 
-#####1) Basic Incident Response
+##### 1) Basic Incident Response
 
 Run this script directly to extract live forensic data from a remote host over the network and send the evidence report out via email to the Incident Response team and/or push the evidence in its entirety to a remote share for later review. You could alternatively, run this script on the host directly, by way of a USB and store the results on the external drive.
 
-#####2) SIEM Integration for Incident Response Automation
+##### 2) SIEM Integration for Incident Response Automation
 
 Configure as a LogRhythm SmartResponse(TM) to automatically gather live Incident Response data and push HTML reports to the IR team. This can be configured to fire based on alerts observed within the SIEM or launched at-will in SIEM versions 7.0 and higher. When associating with malware events or similar activity where containment is desired, you can leverage the lockdown feature to gather forensic data before effectively knocking the host offline.
 
-#####3) Remote Data Extraction and Endpoint Quarantine
+##### 3) Remote Data Extraction and Endpoint Quarantine
 
 Say that you have received alerts that a system recently became infected with a variant of Cryptolocker, automated cleanup failed, and you are worried about this spreading to shares. Quickly capture data from the remote host to gather data and better understand the infection and then quarantine the host by disabling NICs, logging the user out, and locking their desktop.
 
