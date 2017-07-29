@@ -133,6 +133,7 @@ The safest way to run this script is locally, however remote execution is possib
       -Host File Information
       -IP Address
       -Netstat Information
+	  -Last File Created
       -List Open Shares
       -Local PowerShell Scripts
       -Logon Data
@@ -197,8 +198,7 @@ If (Test-Path $exists){
 #=======================================================================================
 
 # Get user and admin info
-whoami > PSRecon\config\whoami.html
-$whoami = type PSRecon\config\whoami.html
+$whoami = $env:username
 qwinsta > PSRecon\config\activeUsers.html
 $activeUsersA = type PSRecon\config\activeUsers.html
 $activeUsers = $activeUsersA | foreach {$_ + "<br />"}
@@ -238,18 +238,13 @@ $atA = get-content PSRecon\process\at-jobs.html
 $at = $atA | foreach {$_ + "<br />"}
 
 # Gathering list of Scheduled Tasks
-schtasks > PSRecon\system\schtasks.html
-$schtasksA = get-content PSRecon\system\schtasks.html
-$schtasks = $schtasksA | foreach {$_ + "<br />"}
+$schtasks = Get-ScheduledTask | where state -EQ 'ready' | Get-ScheduledTaskInfo | Sort TaskPath |Select TaskName, TaskPath | ConvertTo-Html -Fragment
 
-# Extract security update data
-get-hotfix | Where-Object {$_.Description -ne ''} | select Description,HotFixID,InstalledBy | format-list > PSRecon\system\hotfix-status.html
-$hotfixA = get-content PSRecon\system\hotfix-status.html
-$hotfix = $hotfixA | foreach {$_ + "<br />"}
+# Extract Installed Hotfix 
+$hotfix = get-hotfix | Where-Object {$_.Description -ne ''} | select Description,HotFixID,InstalledBy | ConvertTo-Html -Fragment
 
 # Gathering Process Information
-tasklist /V /FO CSV | ConvertFrom-Csv | ConvertTo-Html -Fragment > PSRecon\process\user-tasks.html
-$taskDetail = type PSRecon\process\user-tasks.html
+$taskDetail = tasklist /V /FO CSV | ConvertFrom-Csv | ConvertTo-Html -Fragment
 
 # Gather Windows Service Data
 Get-WmiObject win32_service | Select-Object Name, DisplayName, PathName, StartName, StartMode, State, TotalSessions, Description > PSRecon\process\service-detail.html
@@ -257,28 +252,19 @@ $serviceDetailA = get-content PSRecon\process\service-detail.html
 $serviceDetail = $serviceDetailA | foreach {$_ + "<br />"}
 
 # DNS Cache
-ipconfig -displaydns > PSRecon\network\dnscache.html 2> PSRecon\network\dnserror.html
-$dnsCacheA = get-content PSRecon\network\dnscache.html
-$dnsCache = $dnsCacheA | foreach {$_ + "<br />"}
+$dnsCache = Get-DnsClientCache -Status 'Success' | Select Name, Data | ConvertTo-Html -Fragment
 
 # Netstat information
-netstat -ant > PSRecon\network\netstat.html 2> PSRecon\network\netstaterror.html
-$netstatA = get-content PSRecon\network\netstat.html
-$netstat = $netstatA | foreach {$_ + "<br />"}
+$netstat = netstat -ant | select -skip 4 | ConvertFrom-String -PropertyNames none, proto,ipsrc,ipdst,state,state2,none,none | select ipsrc,ipdst,state | ConvertTo-Html -Fragment
 
 # Display Listening Processes
-netstat -ano | findstr -i listening | ForEach-Object { $_ -split "\s+|\t+" } | findstr /r "^[1-9+]*$" | sort | unique | ForEach-Object { Get-Process -Id $_ } | Select ProcessName,Path,Company,Description | ConvertTo-Html > PSRecon\network\net-processes.html
-$listeningProcesses = Get-Content PSRecon\network\net-processes.html
+$listeningProcesses = netstat -ano | findstr -i listening | ForEach-Object { $_ -split "\s+|\t+" } | findstr /r "^[1-9+]*$" | sort | unique | ForEach-Object { Get-Process -Id $_ } | Select ProcessName,Path,Company,Description | ConvertTo-Html -Fragment > PSRecon\network\net-processes.html
 
 # ARP table
-arp -a > PSRecon\network\arp.html
-$arpA = get-content PSRecon\network\arp.html
-$arp = $arpA | foreach {$_ + "<br />"}
+$arp = arp -a | select -skip 3 | ConvertFrom-String -PropertyNames none,IP,MAC,Type | Select IP,MAC,Type | ConvertTo-Html -Fragment
 
 # Gathering information about running services
-net start > PSRecon\network\netservices.html
-$netServicesA = get-content PSRecon\network\netservices.html
-$netServices = $netServicesA | foreach {$_ + "<br />"}
+$netServices = Get-Service | where-object {$_.Status -eq "Running"} | Select Name, DisplayName | ConvertTo-Html -fragment
 
 #Gathering information about open shares
 net user > PSRecon\system\netuser.html
@@ -289,24 +275,17 @@ $sharesA = get-content PSRecon\network\shares.html
 $shares = $sharesA | foreach {$_ + "<br />"}
 
 # Gathering host file information
-type $env:windir\system32\drivers\etc\hosts > PSRecon\network\etchosts.html
-type $env:windir\system32\drivers\etc\networks > PSRecon\network\etcnetworks.html
-$hostsA = get-content PSRecon\network\etchosts.html
-$hosts = $hostsA | foreach {$_ + "<br />"}
-$networksA = get-content PSRecon\network\etcnetworks.html
-$networks = $networksA | foreach {$_ + "<br />"}
+$hosts = Import-Csv $env:windir\system32\drivers\etc\hosts | ConvertTo-Html -Fragment
+$networks = Import-Csv $env:windir\system32\drivers\etc\networks | ConvertTo-Html -Fragment
 
 # Gather Currently Installed Software
-Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* |  Select-Object DisplayName, DisplayVersion, Publisher, InstallDate | ConvertTo-Html -Fragment > PSRecon\process\software.html
-$software = type PSRecon\process\software.html
+$software = Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\* |  Select-Object DisplayName, DisplayVersion, Publisher, InstallDate | ConvertTo-Html -Fragment > PSRecon\process\software.html
 
 # List Recently Used USB Devices
-Get-ItemProperty -Path HKLM:\SYSTEM\CurrentControlSet\Enum\USBSTOR\*\* | Select FriendlyName | ConvertTo-Html -Fragment > PSRecon\system\usb.html
-$usb = type PSRecon\system\usb.html
+$usb = Get-ItemProperty -Path HKLM:\SYSTEM\CurrentControlSet\Enum\USBSTOR\*\* | Select FriendlyName | ConvertTo-Html -Fragment > PSRecon\system\usb.html
 
 # Gather command history
-Get-History | ConvertTo-Html -Fragment > PSRecon\system\command-line-history.html
-$commandHist = type PSRecon\system\command-line-history.html
+$commandHist = Get-History | ConvertTo-Html -Fragment
 
 # Dumping the firewall information
 echo "Firewall State" > PSRecon\system\firewall-config.html
@@ -320,8 +299,7 @@ $firewall = $firewallA | foreach {$_ + "<br />"}
 $firewall > PSRecon\system\firewall-config.html
 
 # Saving the Environment
-Get-ChildItem ENV: | Select Name, Value | ConvertTo-Html -Fragment > PSRecon\system\environment.html
-$set = type PSRecon\system\environment.html
+$set = Get-ChildItem ENV: | Select Name, Value | ConvertTo-Html -Fragment
 
 # Return GPResult Output
 & $env:windir\system32\gpresult.exe /v > PSRecon\system\gpresult.html
@@ -334,12 +312,10 @@ $smbSessionA = get-content PSRecon\network\smbsessions.html
 $smbSession = $smbSessionS | foreach {$_ + "<br />"}
 
 # Get ACL's
-Get-Acl | Select AccessToString, Owner, Group, Sddl | ConvertTo-Html -Fragment > PSRecon\system\acl.html
-$acl = type PSRecon\system\acl.html
+$acl = Get-Acl | Select AccessToString, Owner, Group, Sddl | ConvertTo-Html -Fragment
 
 # Gathering Windows version information
-[Environment]::OSVersion | ConvertTo-Html -Fragment > PSRecon\system\os-version.html
-$version = type PSRecon\system\os-version.html
+$version = [Environment]::OSVersion | ConvertTo-Html -Fragment
 
 # Dumping the startup information
 type $env:SystemDrive\autoexec.bat > PSRecon\system\autoexecBat.html 2>&1
@@ -363,24 +339,19 @@ $powershellVersion = $powershellVersionA | foreach {$_ + "<br />"}
 # Thanks Mark Vankempen!
 $startupDrivers = reg query hklm\system\currentcontrolset\services /s | Select-String -pattern "^\s*?ImagePath.*?\.sys$"
 $shadyDrivers = $startupDrivers | Select-String -pattern "^\s*?ImagePath.*?(user|temp).*?\\.*?\.(sys|exe)$"
-$startupDrivers = $startupDrivers | ConvertTo-Html
-$shadyDrivers = $shadyDrivers | ConvertTo-Html
+$startupDrivers = $startupDrivers | ConvertTo-Html -Fragment
+$shadyDrivers = $shadyDrivers | ConvertTo-Html -Fragment
 $startupDrivers > PSRecon\registry\startup-drivers.html
 
-Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run > PSRecon\registry\HKLM-Run.html
-$hklmRunA = type PSRecon\registry\HKLM-Run.html
-$hklmRun = $hklmRunA | foreach {$_ + "<br />"}
-Get-ItemProperty HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run > PSRecon\registry\HKCU-Run.html
-$hkcuRunA = type PSRecon\registry\HKCU-Run.html
-$hkcuRun = $hkcuRunA | foreach {$_ + "<br />"}
+# Registry: Run
+$hklmRun = Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run | ConvertTo-Html -as List -Fragment
+$hkcuRun = Get-ItemProperty HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run | ConvertTo-Html -as List -Fragment
 
-Get-WmiObject -Namespace root\SecurityCenter2 -Class AntiVirusProduct > PSRecon\process\av.html
-$antiVirusA = type PSRecon\process\av.html
-$antiVirus = $antiVirusA | foreach {$_ + "<br />"}
+# Antivirus
+$antiVirus = Get-WmiObject -Namespace root\SecurityCenter2 -Class AntiVirusProduct | ConvertTo-Html -as List -Fragment 
 
 # list downloaded files
-dir C:\Users\*\Downloads\* -Recurse | Select Name, CreationTime, LastAccessTime, Attributes | ConvertTo-Html -Fragment > PSRecon\web\downloads.html
-$downloads = type PSRecon\web\downloads.html
+$downloads = dir C:\Users\*\Downloads\* -Recurse | Select Name, CreationTime, LastAccessTime, Attributes | ConvertTo-Html -Fragment > PSRecon\web\downloads.html
 
 # Extract Prefetch File Listing
 # script stolen from:
@@ -894,7 +865,7 @@ if ( $remote -eq $true ) {
     }
     Function Find-PSScriptsInPSAppLog {
         $ReturnInfo = @{}
-        $Logs = Get-WinEvent -LogName "Microsoft-Windows-PowerShell/Operational" -ErrorAction SilentlyContinue | Where {$_.Id -eq 4100}
+        $Logs = Get-WinEvent -LogName "Microsoft-Windows-PowerShell/Operational" -FilterXPath "*[System[EventID=4100]]" -ErrorAction SilentlyContinue
 
         foreach ($Log in $Logs)
         {
@@ -1052,6 +1023,23 @@ if ( Test-Path $profile ) {
     $PSprofile = "<br />No PowerShell Profile File Found:<br /><br />"
 }
 
+# Last File Created
+$Nb_day = -7
+$Driveletter = ([System.IO.DriveInfo]::getdrives() | Where-Object {$_.DriveType -ne 'Network'} | Select-Object -ExpandProperty Name)
+$MinDate = ((Get-Date).AddDays($Nb_day).ToString("MM/dd/yyyy"))
+
+# Potential Dangerous Programs, Scripts, Shortcuts, Office Macros, PDF 
+
+$File_Extension = @("*.exe","*.pif","*.application","*.gadget","*.msi","*.msp","*.com","*.scr","*.hta","*.cpl","*.msc","*.jar","*.bat","*.cmd","*.vb","*.vbs","*.vbe","*.js","*.jse","*.ws","*.wsf","*.wsc","*.wsh","*.wsh","*.ps1","*.ps1xml","*.ps2","*.ps2xml","*.psc1","*.psc2","*.msh","*.msh1","*.msh2","*.mshxml","*.msh1xml","*.msh2xml","*.scf","*.lnk","*.inf","*.reg","*.doc","*.xls","*.ppt","*.docm","*.dotm","*.xlsm","*.xltm","*.xlam","*.pptm","*.potm","*.ppam","*.ppsm","*.sldm","*.pdf")
+
+
+
+Foreach ( $item in $Driveletter)
+ {	
+	$Drive = $item -creplace '^*\\', ''
+	 $DangerousFiles = $DangerousFiles + (Get-ChildItem $Drive -Recurse -ErrorAction $ErrorActionPreference -include $File_Extension | Where-Object { $_.CreationTime -ge $MinDate } | Select-Object FullName, CreationTime, LastAccessTime, LastWriteTime, @{Name="Kbytes";Expression={$_.Length / 1Kb}} |Sort-Object CreationTime)
+}
+$DangerousFiles = $DangerousFiles | ConvertTo-Html -Fragment
 #=======================================================================================
 # Evidence Verification
 #=======================================================================================
@@ -1106,11 +1094,9 @@ function Get-FileHash {
 Get-Process | Where-Object {-not [string]::IsNullOrEmpty($_.Path)} | Select-Object Path -Unique | sort | Get-FileHash -Algorithm SHA256 | ConvertTo-Html -Fragment >> PSRecon\process\process-hashes.html
 $processHashes = Get-Content PSRecon\process\process-hashes.html
 
-"$env:windir\System32\WindowsPowerShell\v1.0\powershell.exe" | Get-FileHash -Algorithm SHA256 | ConvertTo-Html -Fragment > PSRecon\config\powershell-hashes.html
-$powershellHashes = type PSRecon\config\powershell-hashes.html
+$powershellHashes = "$env:windir\System32\WindowsPowerShell\v1.0\powershell.exe" | Get-FileHash -Algorithm SHA256 | ConvertTo-Html -Fragment
 
-Get-ChildItem C:\Users\*\Downloads\ -Recurse | Get-FileHash -Algorithm SHA256 | ConvertTo-Html -Fragment > PSRecon\web\download-hashes.html
-$downloadHashes = type PSRecon\web\download-hashes.html
+$downloadHashes = Get-ChildItem C:\Users\*\Downloads\ -Recurse | Get-FileHash -Algorithm SHA256 | ConvertTo-Html -Fragment > PSRecon\web\download-hashes.html
 
 Get-ChildItem PSRecon\ -Recurse -Filter *.html | Get-FileHash -Algorithm SHA256 | ConvertTo-Html -Fragment > PSRecon\config\e-hashes.html
 Get-Content PSRecon\config\e-hashes.html | Select-String -pattern 'e-hashes' -notmatch | Out-File PSRecon\config\evidence-hashes.html
@@ -1353,6 +1339,12 @@ $htmlJS = @"
 `$(window).load(function(){
   `$("a.box-toggle7-process").on('click', function () {
       `$('div.box-content7-process').slideToggle(200).toggleClass('active');
+      return false;
+  });
+});
+`$(window).load(function(){
+  `$("a.box-toggle8-process").on('click', function () {
+      `$('div.box-content8-process').slideToggle(200).toggleClass('active');
       return false;
   });
 });
@@ -2128,8 +2120,7 @@ c65 -34 88 -85 100 -226 12 -131 -1 -308 -26 -371 -22 -56 -63 -87 -130 -101
 <div class="data" style="width:98%;height:400px;overflow:auto;">
 <pre align="left">
 
-Whoami:
-  $whoami
+Whoami: $whoami
 
 Current Active Users:
     $activeUsers
@@ -2409,8 +2400,18 @@ $software
 </div>
 </td></tr>
 <tr><td id="top" class="section" width="50%" valign="top">
-<a id="nav" class="box-toggle2-process" href="#">Anti Virus</a>
+<a id="nav" class="box-toggle2-process" href="#">Potential Dangerous Files</a>
 <div class="box-content2-process" style="display:none;align:center;">
+<div class="data" style="width:99%;height:400px;overflow:auto;">
+<pre align="left" width="100%">
+$DangerousFiles
+</pre>
+</div>
+</div>
+</td></tr>
+<tr><td id="top" class="section" width="50%" valign="top">
+<a id="nav" class="box-toggle3-process" href="#">Anti Virus</a>
+<div class="box-content3-process" style="display:none;align:center;">
 <div class="data" style="width:99%;height:400px;overflow:auto;">
 <pre align="left" width="100%">
 $antiVirus
@@ -2419,8 +2420,8 @@ $antiVirus
 </div>
 </td></tr>
 <tr><td id="top" class="section" width="50%" valign="top">
-<a id="nav" class="box-toggle3-process" href="#">Services</a>
-<div class="box-content3-process" style="display:none;align:center;">
+<a id="nav" class="box-toggle4-process" href="#">Services</a>
+<div class="box-content4-process" style="display:none;align:center;">
 <div class="data" style="width:99%;height:400px;overflow:auto;">
 <pre align="left" width="100%">
 $taskDetail
@@ -2429,8 +2430,8 @@ $taskDetail
 </div>
 </td></tr>
 <tr><td id="top" class="section" width="50%" valign="top">
-<a id="nav" class="box-toggle4-process" href="#">Process File Hashes</a>
-<div class="box-content4-process" style="display:none;align:center;">
+<a id="nav" class="box-toggle5-process" href="#">Process File Hashes</a>
+<div class="box-content5-process" style="display:none;align:center;">
 <div class="data" style="width:99%;height:400px;overflow:auto;">
 <pre align="left" width="100%">
 $processHashes
@@ -2439,8 +2440,8 @@ $processHashes
 </div>
 </td></tr>
 <tr><td id="top" class="section" width="50%" valign="top">
-<a id="nav" class="box-toggle5-process" href="#">Service Detail</a>
-<div class="box-content5-process" style="display:none;align:center;">
+<a id="nav" class="box-toggle6-process" href="#">Service Detail</a>
+<div class="box-content6-process" style="display:none;align:center;">
 <div class="data" style="width:99%;height:400px;overflow:auto;">
 <pre align="left" width="100%">
 $serviceDetail
@@ -2449,8 +2450,8 @@ $serviceDetail
 </div>
 </td></tr>
 <tr><td id="top" class="section" width="50%" valign="top">
-<a id="nav" class="box-toggle6-process" href="#">Prefetch Files</a>
-<div class="box-content6-process" style="display:none;align:center;">
+<a id="nav" class="box-toggle7-process" href="#">Prefetch Files</a>
+<div class="box-content7-process" style="display:none;align:center;">
 <div class="data" style="width:99%;height:400px;overflow:auto;">
 <pre align="left" width="100%">
 $prefetch
@@ -2459,8 +2460,8 @@ $prefetch
 </div>
 </td></tr>
 <tr><td id="top" class="section" width="50%" valign="top">
-<a id="nav" class="box-toggle7-process" href="#">AT Jobs</a>
-<div class="box-content7-process" style="display:none;align:center;">
+<a id="nav" class="box-toggle8-process" href="#">AT Jobs</a>
+<div class="box-content8-process" style="display:none;align:center;">
 <div class="data" style="width:99%;height:400px;overflow:auto;">
 <pre align="left" width="100%">
 $at
